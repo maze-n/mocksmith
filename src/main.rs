@@ -1,21 +1,33 @@
+mod http;
+
 use clap::Parser;
 use std::ffi::OsStr;
 use std::path::PathBuf;
+
+#[macro_use]
+extern crate rocket;
+
+use crate::http::Server;
 
 #[derive(Parser)]
 struct Cli {
     file_path: PathBuf,
 }
 
-fn main() {
+#[tokio::main]
+
+async fn main() {
     let args: Cli = Cli::parse();
 
-    if !is_valid(&args.file_path) {
+    if !is_file_valid(&args.file_path) {
         return;
     }
+
+    let server: Server = Server::new(args.file_path);
+    server.start().await;
 }
 
-fn is_valid(file_path: &PathBuf) -> bool {
+fn is_file_valid(file_path: &PathBuf) -> bool {
     if !file_path.exists() {
         println!("Please pass a valid file path!");
         return false;
