@@ -668,6 +668,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "rocket",
+ "serde_json",
  "tokio",
 ]
 

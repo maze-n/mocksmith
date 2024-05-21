@@ -1,29 +1,22 @@
-use rocket::get;
+use crate::routes::{get_entity, index};
+use crate::state::AppState;
 use std::path::PathBuf;
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
-}
-
-pub struct Server {
-    file_path: PathBuf,
-}
+pub struct Server {}
 
 impl Server {
-    pub fn new(file_path: PathBuf) -> Server {
-        Server { file_path }
+    pub fn new() -> Self {
+        Server {}
     }
 
-    pub async fn start(&self) {
-        let server = rocket::build().mount("/", routes![index]);
+    pub async fn start(&mut self, file_path: PathBuf) {
+        // self.load_data();
+        let state = AppState::new(file_path);
 
-        let result = server.launch().await;
-        match result {
-            Err(_) => {
-                println!("Error: Failed to start the server!");
-            }
-            Ok(_) => {}
-        }
+        let server = rocket::build()
+            .manage(std::sync::Mutex::new(state))
+            .mount("/", routes![index, get_entity]);
+
+        server.launch().await.ok();
     }
 }

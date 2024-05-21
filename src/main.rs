@@ -1,4 +1,6 @@
 mod http;
+mod routes;
+mod state;
 
 use clap::Parser;
 use std::ffi::OsStr;
@@ -15,7 +17,6 @@ struct Cli {
 }
 
 #[tokio::main]
-
 async fn main() {
     let args: Cli = Cli::parse();
 
@@ -23,8 +24,8 @@ async fn main() {
         return;
     }
 
-    let server: Server = Server::new(args.file_path);
-    server.start().await;
+    let mut server: Server = Server::new();
+    server.start(args.file_path).await;
 }
 
 fn is_file_valid(file_path: &PathBuf) -> bool {
